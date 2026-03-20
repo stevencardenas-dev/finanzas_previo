@@ -154,18 +154,24 @@ export async function getTransacciones(workspaceId) {
 }
 
 export async function createTransaccion(payload) {
-    // Volvemos a CamelCase (mapeo estándar Spring) pero aseguramos que los IDs no lleguen nulos
+    // Aplicamos redundancia extrema (CamelCase y snake_case) para asegurar el mapeo en la API
     const body = {
         workspaceId: payload.workspaceId,
+        workspace_id: payload.workspaceId,
         tipo: payload.tipo,
         categoriaId: payload.categoriaId,
+        categoria_id: payload.categoriaId,
         beneficiarioId: payload.beneficiarioId,
+        beneficiario_id: payload.beneficiarioId,
         fecha: payload.fecha,
         monto: payload.monto,
         descripcion: payload.descripcion,
         medioPago: payload.medioPago,
+        medio_pago: payload.medioPago,
         cuentaId: payload.cuentaId,
-        tarjetaCreditoId: payload.tarjetaCreditoId
+        cuenta_id: payload.cuentaId,
+        tarjetaCreditoId: payload.tarjetaCreditoId,
+        tarjeta_credito_id: payload.tarjetaCreditoId
     };
 
     const res = await fetch(`${BASE_URL}/transactions`, {
