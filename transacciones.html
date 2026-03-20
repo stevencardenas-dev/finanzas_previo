@@ -134,13 +134,20 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="group-cuenta">
           <label for="trans-cuenta">Cuenta Bancaria / Efectivo</label>
-          <select id="trans-cuenta" required>
+          <select id="trans-cuenta">
             <option value="" disabled selected>Seleccione la cuenta...</option>
-            <!-- Dinámico -->
           </select>
-          <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">Toda transacción requiere una fuente de fondos (Cuenta).</small>
+          <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">Para pagos en efectivo o débito.</small>
+        </div>
+
+        <div class="form-group" id="group-tarjeta" style="display: none;">
+          <label for="trans-tarjeta">Tarjeta de Crédito</label>
+          <select id="trans-tarjeta">
+            <option value="" disabled selected>Seleccione la tarjeta...</option>
+          </select>
+          <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">Para cargos a crédito.</small>
         </div>
 
         <div class="form-group">

@@ -1,9 +1,10 @@
-import { isAuthenticated, logout, getWorkspaceId, getTransacciones, createTransaccion, getCategorias, getBeneficiarios, getCuentas, createCuenta } from './api.js';
+import { isAuthenticated, logout, getWorkspaceId, getTransacciones, createTransaccion, getCategorias, getBeneficiarios, getCuentas, createCuenta, getCreditCards } from './api.js';
 import { showToast } from './ui.js';
 
 let categoriasGlobal = [];
 let beneficiariosGlobal = [];
 let cuentasGlobal = [];
+let tarjetasGlobal = [];
 let transaccionesGlobal = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -63,15 +64,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             const categoriaId = parseInt(document.getElementById('trans-categoria').value);
             const beneficiarioId = parseInt(document.getElementById('trans-beneficiario').value);
             const selCuenta = document.getElementById('trans-cuenta');
-            const cuentaId = selCuenta ? parseInt(selCuenta.value) : null;
-            
             const medioPago = document.getElementById('trans-mediodepago').value;
+            const selTarjeta = document.getElementById('trans-tarjeta');
             
             const btnSubmit = formTrans.querySelector('button[type="submit"]');
 
-            if (!cuentaId || isNaN(cuentaId)) {
-                showToast('Debes seleccionar una Fuente de Pago (Cuenta) válida.', 'error');
-                return;
+            // Determinar qué ID enviar según el medio de pago
+            let finalCuentaId = (medioPago === 'CREDITO') ? null : (selCuenta ? parseInt(selCuenta.value) : null);
+            let finalTarjetaId = (medioPago === 'CREDITO') ? (selTarjeta ? parseInt(selTarjeta.value) : null) : null;
+
+            if (medioPago === 'CREDITO' && (!finalTarjetaId || isNaN(finalTarjetaId))) {
+               showToast('Debes seleccionar una Tarjeta de Crédito válida.', 'error'); return;
+            }
+            if (medioPago !== 'CREDITO' && (!finalCuentaId || isNaN(finalCuentaId))) {
+               showToast('Debes seleccionar una Fuente de Pago (Cuenta) válida.', 'error'); return;
             }
 
             try {
@@ -83,7 +89,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     tipo: tipo.toUpperCase(), 
                     categoriaId, 
                     beneficiarioId, 
-                    cuentaId,
+                    cuentaId: finalCuentaId,
+                    tarjetaCreditoId: finalTarjetaId,
                     fecha, 
                     monto, 
                     descripcion,
@@ -115,21 +122,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (filtroTipo) filtroTipo.addEventListener('change', applyFilters);
     if (filtroCategoria) filtroCategoria.addEventListener('change', applyFilters);
 
-    // Initial Data Fetch
+    // initial data fetch
     await preloadOptions(workspaceId);
     await loadTransacciones(workspaceId);
+
+    // Evento para alternar entre Cuenta y Tarjeta según el medio de pago
+    const selMedio = document.getElementById('trans-mediodepago');
+    const groupCuenta = document.getElementById('group-cuenta');
+    const groupTarjeta = document.getElementById('group-tarjeta');
+    
+    if (selMedio) {
+        selMedio.addEventListener('change', () => {
+            if (selMedio.value === 'CREDITO') {
+                groupCuenta.style.display = 'none';
+                groupTarjeta.style.display = 'block';
+            } else {
+                groupCuenta.style.display = 'block';
+                groupTarjeta.style.display = 'none';
+            }
+        });
+    }
 });
 
 async function preloadOptions(workspaceId) {
     try {
-        const [cats, bens, accs] = await Promise.all([
+        const [cats, bens, accs, cards] = await Promise.all([
             getCategorias(workspaceId),
             getBeneficiarios(workspaceId),
-            getCuentas(workspaceId)
+            getCuentas(workspaceId),
+            getCreditCards(workspaceId)
         ]);
         categoriasGlobal = cats;
         beneficiariosGlobal = bens;
         cuentasGlobal = accs;
+        tarjetasGlobal = cards;
 
         // Si no hay cuenta, intentar crear una por defecto 'Efectivo'
         if (accs.length === 0) {
@@ -177,6 +203,14 @@ function populateSelects() {
         selAcc.innerHTML = '<option value="" disabled selected>Seleccione la cuenta...</option>';
         cuentasGlobal.forEach(a => {
             selAcc.innerHTML += `<option value="${a.id}">${a.nombre} (${a.moneda})</option>`;
+        });
+    }
+
+    const selCard = document.getElementById('trans-tarjeta');
+    if(selCard) {
+        selCard.innerHTML = '<option value="" disabled selected>Seleccione la tarjeta...</option>';
+        tarjetasGlobal.forEach(c => {
+            selCard.innerHTML += `<option value="${c.id}">${c.nombre} (${c.moneda})</option>`;
         });
     }
 }

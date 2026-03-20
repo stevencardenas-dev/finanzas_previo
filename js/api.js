@@ -204,6 +204,16 @@ export async function createCreditCard(payload) {
     if (!res.ok) throw new Error(data.mensaje || 'Error al crear tarjeta');
     return data.data;
 }
+
+export async function deleteCreditCard(id) {
+    const res = await fetch(`${BASE_URL}/credit-cards/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.mensaje || 'Error al eliminar tarjeta');
+    return data.data;
+}
 // ==== MÓDULO CUENTAS ====
 
 export async function getCuentas(workspaceId) {
