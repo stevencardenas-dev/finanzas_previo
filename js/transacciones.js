@@ -1,101 +1,242 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Menu mobile toggle
+import { isAuthenticated, logout, getWorkspaceId, getTransacciones, createTransaccion, getCategorias, getBeneficiarios, getCuentas, createCuenta } from './api.js';
+import { showToast } from './ui.js';
+
+let categoriasGlobal = [];
+let beneficiariosGlobal = [];
+let cuentasGlobal = [];
+let transaccionesGlobal = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!isAuthenticated()) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const userInfo = JSON.parse(localStorage.getItem('finanzas_user') || '{}');
+    if (userInfo.nombre) {
+        const usernameDisp = document.getElementById('user-name-display');
+        const avatarDisp = document.querySelector('.avatar');
+        if(usernameDisp) usernameDisp.textContent = `Hola, ${userInfo.nombre}`;
+        if(avatarDisp) avatarDisp.textContent = userInfo.nombre.charAt(0).toUpperCase();
+    }
+
     const menuToggle = document.getElementById('menu-toggle');
     const sidebar = document.getElementById('sidebar');
-
-    if (menuToggle && sidebar) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
+    if(menuToggle && sidebar) {
+        menuToggle.addEventListener('click', () => { sidebar.classList.toggle('open'); });
     }
 
-    // Establecer fecha actual por defecto en el modal
-    const inputFecha = document.getElementById('trans-fecha');
-    if (inputFecha) {
-        inputFecha.valueAsDate = new Date();
+    const logoutBtn = document.getElementById('logout-btn');
+    if(logoutBtn) {
+        logoutBtn.addEventListener('click', () => { logout(); window.location.href = 'login.html'; });
     }
 
-    // Modal logic
+    const workspaceId = getWorkspaceId();
+    if(!workspaceId) {
+        showToast('Error de Workspace, sesión inválida', 'error'); return;
+    }
+
+    // === Modal ===
     const modal = document.getElementById('modal-transaccion');
     const btnNueva = document.getElementById('btn-nueva-transaccion');
     const btnClose = document.getElementById('close-modal-trans');
-    const formTransaccion = document.getElementById('form-transaccion');
+    const formTrans = document.getElementById('form-transaccion');
 
     if (btnNueva) {
         btnNueva.addEventListener('click', () => {
-            modal.classList.add('active');
+             populateSelects();
+             modal.classList.add('active');
         });
     }
-
-    if (btnClose) {
-        btnClose.addEventListener('click', () => {
-            modal.classList.remove('active');
-        });
-    }
-
-    // Close modal gently when clicking outside
+    if (btnClose) btnClose.addEventListener('click', () => modal.classList.remove('active'));
     window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.remove('active');
-        }
+        if (e.target === modal) modal.classList.remove('active');
     });
 
-    if (formTransaccion) {
-        formTransaccion.addEventListener('submit', (e) => {
+    if (formTrans) {
+        formTrans.addEventListener('submit', async (e) => {
             e.preventDefault();
             const tipo = document.getElementById('trans-tipo').value;
             const fecha = document.getElementById('trans-fecha').value;
-            const monto = document.getElementById('trans-monto').value;
-            const desc = document.getElementById('trans-desc').value;
-            const categoriaId = document.getElementById('trans-categoria').value;
-            const beneficiarioId = document.getElementById('trans-beneficiario').value;
+            const monto = parseFloat(document.getElementById('trans-monto').value);
+            const descripcion = document.getElementById('trans-desc').value;
+            const categoriaId = parseInt(document.getElementById('trans-categoria').value);
+            const beneficiarioId = parseInt(document.getElementById('trans-beneficiario').value);
+            const selCuenta = document.getElementById('trans-cuenta');
+            const cuentaId = selCuenta ? parseInt(selCuenta.value) : null;
+            
+            const btnSubmit = formTrans.querySelector('button[type="submit"]');
 
-            console.log('Crear Transacción:', { tipo, fecha, monto, desc, categoriaId, beneficiarioId });
-            alert(`Transacción guardada existosamente (Simulado)`);
-            
-            modal.classList.remove('active');
-            formTransaccion.reset();
-            inputFecha.valueAsDate = new Date();
-            
-            loadMockTransacciones();
+            if (!cuentaId || isNaN(cuentaId)) {
+                showToast('Debes seleccionar una Fuente de Pago (Cuenta) válida.', 'error');
+                return;
+            }
+
+            try {
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = 'Guardando...';
+
+                await createTransaccion({
+                    workspaceId: parseInt(workspaceId),
+                    tipo: tipo.toUpperCase(), 
+                    categoriaId, 
+                    beneficiarioId, 
+                    cuentaId,
+                    fecha, 
+                    monto, 
+                    descripcion,
+                    medioPago: 'EFECTIVO'
+                });
+
+                showToast(`Transacción registrada con éxito`, 'success');
+                modal.classList.remove('active');
+                formTrans.reset();
+                
+                await loadTransacciones(workspaceId);
+            } catch (error) {
+                showToast(error.message, 'error');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Guardar Transacción';
+            }
         });
     }
 
-    // Load initial data
-    loadMockTransacciones();
+    // Filtros locales
+    const filtroTipo = document.getElementById('filtro-tipo');
+    const filtroCategoria = document.getElementById('filtro-categoria');
+    
+    const applyFilters = () => {
+        renderTransacciones(transaccionesGlobal, filtroTipo.value, filtroCategoria.value);
+    };
+
+    if (filtroTipo) filtroTipo.addEventListener('change', applyFilters);
+    if (filtroCategoria) filtroCategoria.addEventListener('change', applyFilters);
+
+    // Initial Data Fetch
+    await preloadOptions(workspaceId);
+    await loadTransacciones(workspaceId);
 });
 
-function loadMockTransacciones() {
-    const list = document.getElementById('transacciones-list');
-    if (!list) return;
+async function preloadOptions(workspaceId) {
+    try {
+        const [cats, bens, accs] = await Promise.all([
+            getCategorias(workspaceId),
+            getBeneficiarios(workspaceId),
+            getCuentas(workspaceId)
+        ]);
+        categoriasGlobal = cats;
+        beneficiariosGlobal = bens;
+        cuentasGlobal = accs;
 
-    // Datos de prueba (Reemplazables con fetch)
-    const mockTransacciones = [
-        { id: 1, fecha: '2023-11-20', descripcion: 'Nómina Quincenal', categoria: 'Trabajo', beneficiario: 'Empresa SA', tipo: 'ingreso', monto: 1500 },
-        { id: 2, fecha: '2023-11-21', descripcion: 'Compra Supermercado', categoria: 'Alimentación', beneficiario: 'Supermercado Central', tipo: 'gasto', monto: 125 },
-        { id: 3, fecha: '2023-11-22', descripcion: 'Pago Internet', categoria: 'Servicios', beneficiario: 'Proveedor Internet', tipo: 'gasto', monto: 45 },
-        { id: 4, fecha: '2023-11-23', descripcion: 'Cena con amigos', categoria: 'Ocio', beneficiario: 'Restaurante X', tipo: 'gasto', monto: 80 }
-    ];
+        // Si no hay cuenta, intentar crear una por defecto 'Efectivo'
+        if (accs.length === 0) {
+            try {
+                const defaultAcc = await createCuenta(workspaceId, 'Efectivo (Default)', 'AHORROS', 'COP', 0);
+                cuentasGlobal = [defaultAcc];
+                console.log("Cuenta por defecto creada automáticamente");
+            } catch(e) {
+                console.error("Error creando cuenta por defecto", e);
+            }
+        }
 
+        const filtroCategoria = document.getElementById('filtro-categoria');
+        if(filtroCategoria) {
+            filtroCategoria.innerHTML = '<option value="todas">Todas las Categorías</option>';
+            cats.forEach(c => {
+                filtroCategoria.innerHTML += `<option value="${c.nombre}">${c.nombre}</option>`;
+            });
+        }
+    } catch(err) {
+        console.error("Error cargando opciones", err);
+    }
+}
+
+function populateSelects() {
+    const selCat = document.getElementById('trans-categoria');
+    const selBen = document.getElementById('trans-beneficiario');
+    const selAcc = document.getElementById('trans-cuenta');
+    
+    if(selCat) {
+        selCat.innerHTML = '<option value="" disabled selected>Seleccione...</option>';
+        categoriasGlobal.forEach(c => {
+            selCat.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+        });
+    }
+    
+    if(selBen) {
+        selBen.innerHTML = '<option value="" disabled selected>Seleccione...</option>';
+        beneficiariosGlobal.forEach(b => {
+             selBen.innerHTML += `<option value="${b.id}">${b.nombre}</option>`;
+        });
+    }
+
+    if(selAcc) {
+        selAcc.innerHTML = '<option value="" disabled selected>Seleccione la cuenta...</option>';
+        cuentasGlobal.forEach(a => {
+            selAcc.innerHTML += `<option value="${a.id}">${a.nombre} (${a.moneda})</option>`;
+        });
+    }
+}
+
+async function loadTransacciones(workspaceId) {
+    const listArea = document.getElementById('transacciones-list');
+    if (!listArea) return;
+    
+    listArea.innerHTML = '<tr><td colspan="7" class="text-center" style="padding: 2rem;">Cargando historial...</td></tr>';
+
+    try {
+        const transacciones = await getTransacciones(workspaceId);
+        transaccionesGlobal = transacciones.reverse(); // Más nuevas primero
+        
+        const fTipo = document.getElementById('filtro-tipo')?.value || 'todos';
+        const fCat = document.getElementById('filtro-categoria')?.value || 'todas';
+        
+        renderTransacciones(transaccionesGlobal, fTipo, fCat);
+        
+    } catch (error) {
+        showToast(error.message, 'error');
+        listArea.innerHTML = `<tr><td colspan="7" class="text-center text-danger" style="padding: 2rem;">Error al cargar: ${error.message}</td></tr>`;
+    }
+}
+
+function renderTransacciones(transacciones, filtroTipo = 'todos', filtroCategoria = 'todas') {
+    const listArea = document.getElementById('transacciones-list');
+    
     let html = '';
-    mockTransacciones.forEach(t => {
+    
+    // Aplicar filtros locales simples
+    const filtradas = transacciones.filter(t => {
+        const rawTipo = (t.tipo || '').toLowerCase();
+        let matchTipo = (filtroTipo === 'todos' || rawTipo === filtroTipo.toLowerCase());
+        let matchCat = (filtroCategoria === 'todas' || t.categoriaNombre === filtroCategoria);
+        return matchTipo && matchCat;
+    });
+
+    if (filtradas.length === 0) {
+        listArea.innerHTML = '<tr><td colspan="7" class="text-center" style="padding: 2rem;">No hay transacciones que coincidan.</td></tr>';
+        return;
+    }
+
+    filtradas.forEach(t => {
+        const rawTipo = (t.tipo || '').toLowerCase();
+        const isIngreso = rawTipo === 'ingreso';
         html += `
             <tr>
-              <td>${t.fecha}</td>
-              <td style="font-weight: 500;">${t.descripcion}</td>
-              <td><span class="badge category">${t.categoria}</span></td>
-              <td>${t.beneficiario}</td>
-              <td style="color: ${t.tipo === 'ingreso' ? 'var(--success-color)' : 'var(--danger-color)'}; font-weight: 600;">
-                  ${t.tipo === 'ingreso' ? '+' : '-'}$${t.monto.toFixed(2)}
-              </td>
-              <td><span class="badge ${t.tipo}">${t.tipo.charAt(0).toUpperCase() + t.tipo.slice(1)}</span></td>
-              <td style="display: flex; gap: 0.5rem; border-bottom: none;">
-                  <button class="btn-icon" title="Editar" style="width: 32px; height: 32px; font-size: 0.875rem;"><i class="fas fa-edit"></i></button>
-                  <button class="btn-icon" title="Eliminar" style="width: 32px; height: 32px; font-size: 0.875rem; color: var(--danger-color);"><i class="fas fa-trash"></i></button>
-              </td>
+                <td>${t.fecha}</td>
+                <td style="font-weight: 500;">${t.descripcion}</td>
+                <td><span class="badge category">${t.categoriaNombre || 'N/A'}</span></td>
+                <td>${t.beneficiarioNombre || 'N/A'}</td>
+                <td style="color: ${isIngreso ? 'var(--success-color)' : 'var(--danger-color)'}; font-weight: 600;">
+                    ${isIngreso ? '+' : '-'}$${parseFloat(t.monto).toFixed(2)}
+                </td>
+                <td><span class="badge ${rawTipo}">${rawTipo.charAt(0).toUpperCase() + rawTipo.slice(1)}</span></td>
+                <td>
+                    <button class="btn-icon" title="Opciones" style="margin: 0 auto;"><i class="fas fa-ellipsis-v"></i></button>
+                </td>
             </tr>
         `;
     });
 
-    list.innerHTML = html;
+    listArea.innerHTML = html;
 }

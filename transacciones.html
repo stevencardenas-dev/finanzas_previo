@@ -17,6 +17,7 @@
         <li><a href="transacciones.html" class="active"><i class="fas fa-chart-line"></i> Transacciones</a></li>
         <li><a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a></li>
         <li><a href="beneficiarios.html"><i class="fas fa-users"></i> Beneficiarios</a></li>
+        <li><a href="cuentas.html"><i class="fas fa-university"></i> Fuentes de Pago</a></li>
       </ul>
       <button class="btn-icon" id="logout-btn" title="Cerrar Sesión" style="width: 100%; border-radius: 8px; margin-top: auto; display: flex; gap: 0.5rem; justify-content: flex-start; padding: 0.75rem 1rem;">
         <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
@@ -120,21 +121,25 @@
             <label for="trans-categoria">Categoría</label>
             <select id="trans-categoria" required>
               <option value="" disabled selected>Seleccione...</option>
-              <option value="1">Alimentación</option>
-              <option value="2">Transporte</option>
-              <option value="3">Salario</option>
-              <!-- Más categorías -->
+              <!-- Dinámico -->
             </select>
           </div>
           <div class="form-group">
             <label for="trans-beneficiario">Beneficiario</label>
             <select id="trans-beneficiario" required>
               <option value="" disabled selected>Seleccione...</option>
-              <option value="1">Supermercado Central</option>
-              <option value="2">Empresa SA</option>
-              <!-- Más beneficiarios -->
+              <!-- Dinámico -->
             </select>
           </div>
+        </div>
+
+        <div class="form-group">
+          <label for="trans-cuenta">Cuenta Bancaria / Efectivo</label>
+          <select id="trans-cuenta" required>
+            <option value="" disabled selected>Seleccione la cuenta...</option>
+            <!-- Dinámico -->
+          </select>
+          <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">Toda transacción requiere una fuente de fondos (Cuenta).</small>
         </div>
 
         <button type="submit" style="margin-top: 1.5rem;">Guardar Transacción</button>
@@ -142,6 +147,6 @@
     </div>
   </div>
 
-  <script src="js/transacciones.js"></script>
+  <script type="module" src="js/transacciones.js"></script>
 </body>
 </html>

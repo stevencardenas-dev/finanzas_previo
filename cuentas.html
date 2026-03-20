@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuentas y Tarjetas - Finanzas Personales</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">FinanzasApp</div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html"><i class="fas fa-home"></i> Resumen</a></li>
+        <li><a href="transacciones.html"><i class="fas fa-chart-line"></i> Transacciones</a></li>
+        <li><a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a></li>
+        <li><a href="beneficiarios.html"><i class="fas fa-users"></i> Beneficiarios</a></li>
+        <li><a href="cuentas.html" class="active"><i class="fas fa-university"></i> Fuentes de Pago</a></li>
+      </ul>
+      <button class="btn-icon" id="logout-btn" title="Cerrar Sesión" style="width: 100%; border-radius: 8px; margin-top: auto; display: flex; gap: 0.5rem; justify-content: flex-start; padding: 0.75rem 1rem;">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+      </button>
+    </aside>
+
+    <main class="main-content">
+      <header class="header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+          <h2>Fuentes de Pago</h2>
+        </div>
+        <div class="user-info">
+          <span id="user-name-display">Hola, Usuario</span>
+          <div class="avatar">U</div>
+        </div>
+      </header>
+
+      <section class="card">
+        <div class="action-header">
+          <h3 style="margin:0;">Cuentas y Efectivo</h3>
+          <button class="btn-small" id="btn-nueva-cuenta" style="margin:0;"><i class="fas fa-plus"></i> Nueva Cuenta</button>
+        </div>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Gestiona tus cuentas bancarias, billeteras o efectivo disponible.</p>
+        
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Moneda</th>
+                <th>Saldo Inicial</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="cuentas-list">
+              <!-- Cargado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Nueva Cuenta -->
+  <div class="modal" id="modal-cuenta">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="margin:0;">Nueva Fuente de Pago</h2>
+        <button class="close-btn" id="close-modal">&times;</button>
+      </div>
+      <form id="form-cuenta">
+        <div class="form-group">
+          <label for="acc-nombre">Nombre de la Cuenta</label>
+          <input type="text" id="acc-nombre" required placeholder="Ej. Ahorros Bancolombia / Efectivo">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="acc-tipo">Tipo de Cuenta</label>
+            <select id="acc-tipo" required>
+              <option value="AHORROS">Ahorros</option>
+              <option value="CORRIENTE">Corriente</option>
+              <option value="EFECTIVO">Efectivo / Billetera</option>
+              <option value="INVERSION">Inversión</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="acc-moneda">Moneda</label>
+            <select id="acc-moneda" required>
+              <option value="COP">COP (Peso Colombiano)</option>
+              <option value="USD">USD (Dólar)</option>
+              <option value="EUR">EUR (Euro)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="acc-saldo">Saldo Inicial</label>
+          <input type="number" step="0.01" id="acc-saldo" value="0" required>
+        </div>
+        <button type="submit">Crear Cuenta</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="js/cuentas.js"></script>
+</body>
+</html>
