@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Finanzas Personales</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">FinanzasApp</div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i> Resumen</a></li>
+        <li><a href="transacciones.html"><i class="fas fa-chart-line"></i> Transacciones</a></li>
+        <li><a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a></li>
+        <li><a href="beneficiarios.html"><i class="fas fa-users"></i> Beneficiarios</a></li>
+      </ul>
+      <button class="btn-icon" id="logout-btn" title="Cerrar Sesión" style="width: 100%; border-radius: 8px; margin-top: auto; display: flex; gap: 0.5rem; justify-content: flex-start; padding: 0.75rem 1rem;">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <button class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h2>Mi Workspace</h2>
+        </div>
+        <div class="user-info">
+          <span id="user-name-display">Hola, Usuario</span>
+          <div class="avatar">U</div>
+        </div>
+      </header>
+
+      <!-- Stats Grid -->
+      <section class="grid mb-4">
+        <div class="card stat-card">
+          <div class="stat-icon balance">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Saldo Total</h3>
+            <p id="saldo-total">$0.00</p>
+          </div>
+        </div>
+        
+        <div class="card stat-card">
+          <div class="stat-icon income">
+            <i class="fas fa-arrow-up"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Ingresos del Mes</h3>
+            <p id="ingresos-total">$0.00</p>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-icon expense">
+            <i class="fas fa-arrow-down"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Gastos del Mes</h3>
+            <p id="gastos-total">$0.00</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Transactions -->
+      <section class="card" style="margin-top: 2rem;">
+        <div class="action-header">
+          <h2 style="margin: 0;">Transacciones Recientes</h2>
+          <a href="transacciones.html" class="btn-small"><button style="margin: 0;">Ver Todas</button></a>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Monto</th>
+                <th>Tipo</th>
+              </tr>
+            </thead>
+            <tbody id="recent-transactions-list">
+              <!-- Datos de ejemplo cargados por JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

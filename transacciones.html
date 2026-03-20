@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transacciones - Finanzas Personales</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">FinanzasApp</div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html"><i class="fas fa-home"></i> Resumen</a></li>
+        <li><a href="transacciones.html" class="active"><i class="fas fa-chart-line"></i> Transacciones</a></li>
+        <li><a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a></li>
+        <li><a href="beneficiarios.html"><i class="fas fa-users"></i> Beneficiarios</a></li>
+      </ul>
+      <button class="btn-icon" id="logout-btn" title="Cerrar Sesión" style="width: 100%; border-radius: 8px; margin-top: auto; display: flex; gap: 0.5rem; justify-content: flex-start; padding: 0.75rem 1rem;">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <button class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h2>Transacciones</h2>
+        </div>
+        <div class="user-info">
+          <span id="user-name-display">Hola, Usuario</span>
+          <div class="avatar">U</div>
+        </div>
+      </header>
+
+      <section class="card">
+        <div class="action-header">
+          <h3 style="margin:0;">Historial de Transacciones</h3>
+          <button class="btn-small" id="btn-nueva-transaccion" style="margin:0;"><i class="fas fa-plus"></i> Nueva Transacción</button>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+            <select id="filtro-tipo">
+              <option value="todos">Todos los Tipos</option>
+              <option value="ingreso">Ingresos</option>
+              <option value="gasto">Gastos</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+            <select id="filtro-categoria">
+              <option value="todas">Todas las Categorías</option>
+              <!-- Dinámico -->
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Beneficiario</th>
+                <th>Monto</th>
+                <th>Tipo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="transacciones-list">
+              <!-- Datos generados dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Nueva Transacción -->
+  <div class="modal" id="modal-transaccion">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2 style="margin:0;">Nueva Transacción</h2>
+        <button class="close-btn" id="close-modal-trans">&times;</button>
+      </div>
+      <form id="form-transaccion">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="trans-tipo">Tipo</label>
+            <select id="trans-tipo" required>
+              <option value="ingreso">Ingreso</option>
+              <option value="gasto">Gasto</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="trans-fecha">Fecha</label>
+            <input type="date" id="trans-fecha" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="trans-monto">Monto</label>
+            <input type="number" step="0.01" id="trans-monto" required placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label for="trans-desc">Descripción</label>
+            <input type="text" id="trans-desc" required placeholder="Ej. Pago de Sueldo">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="trans-categoria">Categoría</label>
+            <select id="trans-categoria" required>
+              <option value="" disabled selected>Seleccione...</option>
+              <option value="1">Alimentación</option>
+              <option value="2">Transporte</option>
+              <option value="3">Salario</option>
+              <!-- Más categorías -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="trans-beneficiario">Beneficiario</label>
+            <select id="trans-beneficiario" required>
+              <option value="" disabled selected>Seleccione...</option>
+              <option value="1">Supermercado Central</option>
+              <option value="2">Empresa SA</option>
+              <!-- Más beneficiarios -->
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" style="margin-top: 1.5rem;">Guardar Transacción</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/transacciones.js"></script>
+</body>
+</html>

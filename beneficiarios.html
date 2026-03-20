@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beneficiarios - Finanzas Personales</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">FinanzasApp</div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html"><i class="fas fa-home"></i> Resumen</a></li>
+        <li><a href="transacciones.html"><i class="fas fa-chart-line"></i> Transacciones</a></li>
+        <li><a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a></li>
+        <li><a href="beneficiarios.html" class="active"><i class="fas fa-users"></i> Beneficiarios</a></li>
+      </ul>
+      <button class="btn-icon" id="logout-btn" title="Cerrar Sesión" style="width: 100%; border-radius: 8px; margin-top: auto; display: flex; gap: 0.5rem; justify-content: flex-start; padding: 0.75rem 1rem;">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <button class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h2>Beneficiarios</h2>
+        </div>
+        <div class="user-info">
+          <span id="user-name-display">Hola, Usuario</span>
+          <div class="avatar">U</div>
+        </div>
+      </header>
+
+      <section class="card">
+        <div class="action-header">
+          <h3 style="margin:0;">Mis Beneficiarios</h3>
+          <button class="btn-small" id="btn-nuevo-beneficiario" style="margin:0;"><i class="fas fa-plus"></i> Nuevo Beneficiario</button>
+        </div>
+        
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="beneficiarios-list">
+              <!-- Datos generados dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Nuevo Beneficiario -->
+  <div class="modal" id="modal-beneficiario">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="margin:0;">Nuevo Beneficiario</h2>
+        <button class="close-btn" id="close-modal-ben">&times;</button>
+      </div>
+      <form id="form-beneficiario">
+        <div class="form-group">
+          <label for="ben-nombre">Nombre de Persona / Entidad</label>
+          <input type="text" id="ben-nombre" required placeholder="Ej. Juan Pérez / Supermercado X">
+        </div>
+        <div class="form-group">
+          <label for="ben-desc">Descripción (Opcional)</label>
+          <input type="text" id="ben-desc" placeholder="Ej. Propietario del piso">
+        </div>
+        <button type="submit" style="margin-top: 1rem;">Guardar Beneficiario</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/beneficiarios.js"></script>
+</body>
+</html>
