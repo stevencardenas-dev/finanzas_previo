@@ -18,6 +18,7 @@
         <li><a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a></li>
         <li><a href="beneficiarios.html"><i class="fas fa-users"></i> Beneficiarios</a></li>
         <li><a href="cuentas.html"><i class="fas fa-university"></i> Fuentes de Pago</a></li>
+        <li><a href="tarjetas.html"><i class="fas fa-credit-card"></i> Tarjetas</a></li>
       </ul>
       <button class="btn-icon" id="logout-btn" title="Cerrar Sesión" style="width: 100%; border-radius: 8px; margin-top: auto; display: flex; gap: 0.5rem; justify-content: flex-start; padding: 0.75rem 1rem;">
         <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
@@ -140,6 +141,15 @@
             <!-- Dinámico -->
           </select>
           <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">Toda transacción requiere una fuente de fondos (Cuenta).</small>
+        </div>
+
+        <div class="form-group">
+          <label for="trans-mediodepago">Medio de Pago</label>
+          <select id="trans-mediodepago" required>
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="DEBITO">Débito / Transferencia</option>
+            <option value="CREDITO">Tarjeta de Crédito</option>
+          </select>
         </div>
 
         <button type="submit" style="margin-top: 1.5rem;">Guardar Transacción</button>

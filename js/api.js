@@ -154,11 +154,11 @@ export async function getTransacciones(workspaceId) {
 }
 
 export async function createTransaccion(payload) {
-    // Aplicamos redundancia extrema (CamelCase y snake_case) para asegurar el mapeo en la API
+    // Si CamelCase falla para cuenta_id but no para categoriaId, probamos una mezcla o snake_case total
     const body = {
         workspaceId: payload.workspaceId,
         workspace_id: payload.workspaceId,
-        tipo: payload.tipo,
+        tipo: payload.tipo.toUpperCase(),
         categoriaId: payload.categoriaId,
         categoria_id: payload.categoriaId,
         beneficiarioId: payload.beneficiarioId,
@@ -181,6 +181,27 @@ export async function createTransaccion(payload) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.mensaje || 'Error creando transacción');
+    return data.data;
+}
+
+// --- TARJETAS DE CRÉDITO ---
+export async function getCreditCards(workspaceId) {
+    const res = await fetch(`${BASE_URL}/credit-cards?workspaceId=${workspaceId}`, {
+        headers: authHeaders()
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.mensaje || 'Error al obtener tarjetas');
+    return data.data;
+}
+
+export async function createCreditCard(payload) {
+    const res = await fetch(`${BASE_URL}/credit-cards`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.mensaje || 'Error al crear tarjeta');
     return data.data;
 }
 // ==== MÓDULO CUENTAS ====

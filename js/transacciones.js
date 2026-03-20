@@ -65,6 +65,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const selCuenta = document.getElementById('trans-cuenta');
             const cuentaId = selCuenta ? parseInt(selCuenta.value) : null;
             
+            const medioPago = document.getElementById('trans-mediodepago').value;
+            
             const btnSubmit = formTrans.querySelector('button[type="submit"]');
 
             if (!cuentaId || isNaN(cuentaId)) {
@@ -85,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fecha, 
                     monto, 
                     descripcion,
-                    medioPago: 'EFECTIVO'
+                    medioPago: medioPago.toUpperCase()
                 });
 
                 showToast(`Transacción registrada con éxito`, 'success');

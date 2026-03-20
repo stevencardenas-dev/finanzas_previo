@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarjetas de Crédito - FinanzasApp</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-text">FinanzasApp</div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="cuentas.html"><i class="fas fa-wallet"></i> Fuentes de Pago</a>
+        <a href="tarjetas.html" class="active"><i class="fas fa-credit-card"></i> Tarjetas</a>
+        <a href="transacciones.html"><i class="fas fa-exchange-alt"></i> Transacciones</a>
+        <a href="categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+        <a href="beneficiarios.html"><i class="fas fa-users"></i> Beneficiarios</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="logout-btn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="content-header">
+        <h1>Gestión de Tarjetas</h1>
+        <button id="add-card-btn"><i class="fas fa-plus"></i> Nueva Tarjeta</button>
+      </header>
+
+      <div class="card">
+        <h2 style="margin-top:0;">Tus Tarjetas de Crédito</h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Moneda</th>
+                <th>Cupo Total</th>
+                <th>Corte/Pago</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="card-list">
+              <!-- Cargado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="card-modal" class="modal">
+    <div class="modal-content card">
+      <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 id="modal-title" style="margin:0;">Añadir Tarjeta</h2>
+        <button id="close-modal" class="btn-icon"><i class="fas fa-times"></i></button>
+      </div>
+      
+      <form id="card-form">
+        <div class="form-group">
+          <label for="card-name">Nombre de la Tarjeta</label>
+          <input type="text" id="card-name" placeholder="Ej. Visa Gold" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="card-currency">Moneda</label>
+            <select id="card-currency">
+              <option value="COP">COP</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="card-cupo">Cupo Total</label>
+            <input type="number" id="card-cupo" placeholder="Ej. 5000000" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="card-dia-corte">Día de Corte</label>
+            <input type="number" id="card-dia-corte" min="1" max="31" value="15" required>
+          </div>
+          <div class="form-group">
+            <label for="card-dia-pago">Día de Pago</label>
+            <input type="number" id="card-dia-pago" min="1" max="31" value="30" required>
+          </div>
+        </div>
+
+        <button type="submit" style="margin-top: 1.5rem; width: 100%;">Guardar Tarjeta</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module" src="js/tarjetas.js"></script>
+</body>
+</html>
