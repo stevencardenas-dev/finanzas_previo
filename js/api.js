@@ -111,7 +111,7 @@ export async function createCategoria(workspaceId, nombre, tipo) {
     const res = await fetch(`${BASE_URL}/categorias`, {
         method: 'POST',
         headers: authHeaders(),
-        body: JSON.stringify({ workspaceId, nombre, tipo })
+        body: JSON.stringify({ workspace_id: workspaceId, nombre, tipo })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.mensaje || 'Error creando categoría');
@@ -154,11 +154,24 @@ export async function getTransacciones(workspaceId) {
 }
 
 export async function createTransaccion(payload) {
-    // payload := { workspaceId, tipo, categoriaId, beneficiarioId, fecha, monto, descripcion }
+    // Mapeo manual a snake_case por si la API es estricta con los nombres de columna (ck_fuente_pago fix)
+    const body = {
+        workspace_id: payload.workspaceId,
+        tipo: payload.tipo,
+        categoria_id: payload.categoriaId,
+        beneficiario_id: payload.beneficiarioId,
+        fecha: payload.fecha,
+        monto: payload.monto,
+        descripcion: payload.descripcion,
+        medio_pago: payload.medioPago,
+        cuenta_id: payload.cuentaId,
+        tarjeta_credito_id: payload.tarjetaCreditoId
+    };
+
     const res = await fetch(`${BASE_URL}/transactions`, {
         method: 'POST',
         headers: authHeaders(),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(body)
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.mensaje || 'Error creando transacción');
